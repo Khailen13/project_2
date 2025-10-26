@@ -1,4 +1,6 @@
-from src.classes import Category
+import pytest
+
+from src.classes import Category, Product
 
 
 def test_product_init(product1, product2, product3, product4):
@@ -19,18 +21,89 @@ def test_product_init(product1, product2, product3, product4):
     assert product3.price == 31000.0
     assert product3.quantity == 14
 
-    assert product3.name == "Xiaomi Redmi Note 11"
-    assert product3.description == "1024GB, Синий"
-    assert product3.price == 31000.0
-    assert product3.quantity == 14
-
     assert product4.name == '55" QLED 4K'
     assert product4.description == "Фоновая подсветка"
     assert product4.price == 123000.0
     assert product4.quantity == 7
 
 
-def test_category_init_count(category1, category2):
+def test_product_new_product():
+    """Проверка атрибута new_product при добавлении новых продуктов:
+    с разными именами, с идентичным именем и с ошибочным ключом"""
+
+    # Добавление продукта "Продукт_A"
+    product_a_parameters = {
+        "name": "Продукт_A",
+        "description": "Описание продукта_A",
+        "price": 100,
+        "quantity": 5,
+    }
+    product_a = Product.new_product(product_a_parameters)
+    assert product_a.name == product_a_parameters["name"]
+    assert product_a.description == product_a_parameters["description"]
+    assert product_a.price == product_a_parameters["price"]
+    assert product_a.quantity == product_a_parameters["quantity"]
+
+    # Добавление продукта "Продукт_B"
+    product_b_parameters = {
+        "name": "Продукт_B",
+        "description": "Описание продукта_B",
+        "price": 100,
+        "quantity": 1,
+    }
+    product_b = Product.new_product(product_b_parameters)
+    assert product_b.name == product_b_parameters["name"]
+    assert product_b.description == product_b_parameters["description"]
+    assert product_b.price == product_b_parameters["price"]
+    assert product_b.quantity == product_b_parameters["quantity"]
+
+    # Добавление продукта "Продукт_A" с большей стоимостью
+    product_c_parameters = {
+        "name": "Продукт_A",
+        "description": "Описание продукта_A",
+        "price": 120,
+        "quantity": 10,
+    }
+    product_c = Product.new_product(product_c_parameters)
+    assert product_c.quantity == product_a_parameters["quantity"] + product_c_parameters["quantity"]
+    assert product_c.price == max(product_a_parameters["price"], product_c_parameters["price"])
+
+    # Добавление продукта "Продукт_Д" с ошибочным ключом
+    product_d_parameters = {
+        "Ключ вместо name": "Продукт_Д",
+        "description": "Описание продукта_Д",
+        "price": 100,
+        "quantity": 5,
+    }
+    with pytest.raises(AttributeError):
+        product_d = Product.new_product(product_d_parameters)
+        product_d.name
+
+
+def test_product_price_setter(capsys):
+    """Проверка сеттера price"""
+
+    # Создание нового экземпляра
+    product_e_parameters = {
+        "name": "Продукт_Д",
+        "description": "Описание продукта_Д",
+        "price": 1000,
+        "quantity": 10,
+    }
+    product_e = Product.new_product(product_e_parameters)
+    assert product_e.price == 1000
+
+    # Изменение цены на большее
+    product_e.price = 1200
+    assert product_e.price == 1200
+
+    # Попытка назначения цене отрицательное значения
+    product_e.price = -100
+    message = capsys.readouterr()
+    assert message.out == "Цена не должна быть нулевая или отрицательная\n"
+
+
+def test_category_init_count(category1, category2, product1, product2, product4):
     """Проверка корректности инициализации, подсчета количества продуктов и категорий объектов класса Category"""
 
     assert category1.name == "Смартфоны"
@@ -38,15 +111,20 @@ def test_category_init_count(category1, category2):
         category1.description
         == "Смартфоны, как средство не только коммуникации, но и получения дополнительных функций для удобства жизни"
     )
-    assert len(category1.products) == 3
+    assert Category.category_count == 2
+    assert Category.product_count == 0
+    assert category1.products == ""
+    assert Category.product_count == 0
+    category1.add_product(product1)
+    assert category1.products == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт.\n"
+    assert Category.product_count == 1
 
     assert category2.name == "Телевизоры"
     assert (
         category2.description
         == "Современный телевизор, который позволяет наслаждаться просмотром, станет вашим другом и помощником"
     )
-    assert len(category2.products) == 1
-
-    assert Category.product_count == 4
-
-    assert Category.category_count == 2
+    assert category2.products == ""
+    category2.add_product(product4)
+    assert category2.products == '55" QLED 4K, 123000.0 руб. Остаток: 7 шт.\n'
+    assert Category.product_count == 2
