@@ -146,12 +146,14 @@ def test_category_init_count(category1, category2, product1, product2, product4)
     assert Category.product_count == 2
 
 
-def test_category_str(category1, product1):
+def test_category_str(category1, product1, product2):
     """Проверка строкового отображения"""
 
     assert str(category1) == "Смартфоны, количество продуктов: 0 шт.\n"
     category1.add_product(product1)
-    assert str(category1) == "Смартфоны, количество продуктов: 1 шт.\n"
+    assert str(category1) == "Смартфоны, количество продуктов: 5 шт.\n"
+    category1.add_product(product2)
+    assert str(category1) == "Смартфоны, количество продуктов: 13 шт.\n"
 
 
 def test_category_iterator(category1, product1, product2):
