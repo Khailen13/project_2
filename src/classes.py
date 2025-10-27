@@ -21,6 +21,13 @@ class Product:
             }
         )
 
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт.\n"
+
+    def __add__(self, other):
+        total_price = self.price * self.quantity + other.price * other.quantity
+        return total_price
+
     @classmethod
     def new_product(cls, params: dict):
 
@@ -72,6 +79,9 @@ class Category:
         Category.category_count += 1
         Category.product_count += len(products)
 
+    def __str__(self):
+        return f"{self.name}, количество продуктов: {len(self.__products)} шт.\n"
+
     def add_product(self, product) -> None:
         self.__products.append(product)
         Category.product_count += 1
@@ -80,5 +90,24 @@ class Category:
     def products(self) -> str:
         result = ""
         for product in self.__products:
-            result += f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.\n"
+            result = result + str(product)
         return result
+
+
+class CategoryIterator:
+    """Класс для перебора товары одной категории"""
+
+    def __init__(self, category_obj):
+        self.category = category_obj
+        self.products_str_list = self.category.products.split("\n")
+
+    def __iter__(self):
+        self.index = -1
+        return self
+
+    def __next__(self):
+        if self.index < len(self.products_str_list) - 2:
+            self.index += 1
+            return self.products_str_list[self.index]
+        else:
+            raise StopIteration
