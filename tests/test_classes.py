@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, CategoryIterator, Product
+from src.classes import Category, CategoryIterator, LawnGrass, Product, Smartphone
 
 
 def test_product_init(product1, product2, product3, product4):
@@ -111,16 +111,19 @@ def test_product_str(product1, product2, product3):
     assert str(product3) == "Xiaomi Redmi Note 11, 31000.0 руб. Остаток: 14 шт.\n"
 
 
-def test_product_add(product1, product2, product3):
+def test_product_add(product1, product2, product3, smartphone1, grass1):
     """Проверка сложения продуктов"""
 
     assert product1 + product2 == 2580000.0
     assert product1 + product3 == 1334000.0
     assert product2 + product3 == 2114000.0
+    with pytest.raises(TypeError):
+        smartphone1 + grass1
 
 
-def test_category_init_count(category1, category2, product1, product2, product4):
-    """Проверка корректности инициализации, подсчета количества продуктов и категорий объектов класса Category"""
+def test_category_init_add_product_count(category1, category2, product1, product2, product4, smartphone1, smartphone2):
+    """Проверка корректности инициализации, добавления продуктов,
+    подсчета количества продуктов и категорий объектов класса Category"""
 
     assert category1.name == "Смартфоны"
     assert (
@@ -134,7 +137,6 @@ def test_category_init_count(category1, category2, product1, product2, product4)
     category1.add_product(product1)
     assert category1.products == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт.\n"
     assert Category.product_count == 1
-
     assert category2.name == "Телевизоры"
     assert (
         category2.description
@@ -144,6 +146,9 @@ def test_category_init_count(category1, category2, product1, product2, product4)
     category2.add_product(product4)
     assert category2.products == '55" QLED 4K, 123000.0 руб. Остаток: 7 шт.\n'
     assert Category.product_count == 2
+    category_smartphones = Category("Смартфоны", "Высокотехнологичные смартфоны", [smartphone1])
+    with pytest.raises(TypeError):
+        category_smartphones.add_product("Not a product")
 
 
 def test_category_str(category1, product1, product2):
@@ -168,3 +173,30 @@ def test_category_iterator(category1, product1, product2):
     assert len(products_list) == 2
     assert products_list[0] == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт."
     assert products_list[1] == "Iphone 15, 210000.0 руб. Остаток: 8 шт."
+
+
+def test_smartphone_init(smartphone1):
+    """Проверка инициализации"""
+
+    assert type(smartphone1) is Smartphone
+    assert smartphone1.name == "Samsung Galaxy S23 Ultra"
+    assert smartphone1.description == "256GB, Серый цвет, 200MP камера"
+    assert smartphone1.price == 180000.0
+    assert smartphone1.quantity == 5
+    assert smartphone1.efficiency == 95.5
+    assert smartphone1.model == "S23 Ultra"
+    assert smartphone1.memory == 256
+    assert smartphone1.color == "Серый"
+
+
+def test_lawngrass_init(grass1):
+    """Проверка инициализации"""
+
+    assert type(grass1) is LawnGrass
+    assert grass1.name == "Газонная трава"
+    assert grass1.description == "Элитная трава для газона"
+    assert grass1.price == 500.0
+    assert grass1.quantity == 20
+    assert grass1.country == "Россия"
+    assert grass1.germination_period == "7 дней"
+    assert grass1.color == "Зеленый"
