@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, Product
+from src.classes import Category, CategoryIterator, Product
 
 
 def test_product_init(product1, product2, product3, product4):
@@ -103,6 +103,22 @@ def test_product_price_setter(capsys):
     assert message.out == "Цена не должна быть нулевая или отрицательная\n"
 
 
+def test_product_str(product1, product2, product3):
+    """Проверка строкового отображения"""
+
+    assert str(product1) == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт.\n"
+    assert str(product2) == "Iphone 15, 210000.0 руб. Остаток: 8 шт.\n"
+    assert str(product3) == "Xiaomi Redmi Note 11, 31000.0 руб. Остаток: 14 шт.\n"
+
+
+def test_product_add(product1, product2, product3):
+    """Проверка сложения продуктов"""
+
+    assert product1 + product2 == 2580000.0
+    assert product1 + product3 == 1334000.0
+    assert product2 + product3 == 2114000.0
+
+
 def test_category_init_count(category1, category2, product1, product2, product4):
     """Проверка корректности инициализации, подсчета количества продуктов и категорий объектов класса Category"""
 
@@ -128,3 +144,27 @@ def test_category_init_count(category1, category2, product1, product2, product4)
     category2.add_product(product4)
     assert category2.products == '55" QLED 4K, 123000.0 руб. Остаток: 7 шт.\n'
     assert Category.product_count == 2
+
+
+def test_category_str(category1, product1, product2):
+    """Проверка строкового отображения"""
+
+    assert str(category1) == "Смартфоны, количество продуктов: 0 шт.\n"
+    category1.add_product(product1)
+    assert str(category1) == "Смартфоны, количество продуктов: 5 шт.\n"
+    category1.add_product(product2)
+    assert str(category1) == "Смартфоны, количество продуктов: 13 шт.\n"
+
+
+def test_category_iterator(category1, product1, product2):
+    """Проверка итератора категорий"""
+
+    category1.add_product(product1)
+    category1.add_product(product2)
+    products_list = []
+    for i in CategoryIterator(category1):
+        products_list.append(i)
+
+    assert len(products_list) == 2
+    assert products_list[0] == "Samsung Galaxy S23 Ultra, 180000.0 руб. Остаток: 5 шт."
+    assert products_list[1] == "Iphone 15, 210000.0 руб. Остаток: 8 шт."
