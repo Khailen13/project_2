@@ -7,7 +7,7 @@ class Product:
     quantity: int
     general_product_list: list = []
 
-    def __init__(self, name: str, description: str, price: float, quantity: int) -> None:
+    def __init__(self, name, description, price, quantity) -> None:
         self.name = name
         self.description = description
         self.__price = price
@@ -25,8 +25,11 @@ class Product:
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт.\n"
 
     def __add__(self, other):
-        total_price = self.price * self.quantity + other.price * other.quantity
-        return total_price
+        if type(self) is type(other):
+            total_price = self.price * self.quantity + other.price * other.quantity
+            return total_price
+        else:
+            raise TypeError
 
     @classmethod
     def new_product(cls, params: dict):
@@ -86,8 +89,11 @@ class Category:
         return f"{self.name}, количество продуктов: {total_category_products_quantity} шт.\n"
 
     def add_product(self, product) -> None:
-        self.__products.append(product)
-        Category.product_count += 1
+        if isinstance(product, Product):
+            self.__products.append(product)
+            Category.product_count += 1
+        else:
+            raise TypeError
 
     @property
     def products(self) -> str:
@@ -114,3 +120,24 @@ class CategoryIterator:
             return self.products_str_list[self.index]
         else:
             raise StopIteration
+
+
+class Smartphone(Product):
+    """Класс для категории товаров 'Смартфон'"""
+
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+
+class LawnGrass(Product):
+    """Класс для категории товаров 'Трава газонная'"""
+
+    def __init__(self, name, description, price, quantity, country, germination_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
