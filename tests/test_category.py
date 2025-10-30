@@ -41,3 +41,17 @@ def test_category_str(category1, product1, product2):
     assert str(category1) == "Смартфоны, количество продуктов: 5 шт.\n"
     category1.add_product(product2)
     assert str(category1) == "Смартфоны, количество продуктов: 13 шт.\n"
+
+
+def test_category_middle_price(product1, product2, product3):
+    """Проверка успешного выполнения метода middle_price"""
+
+    category1 = Category("Смартфоны", "Категория смартфонов", [product1, product2, product3])
+    assert category1.middle_price() == 140333.33
+
+
+def test_category_middle_price_with_empty_products():
+    """Проверка результата middle_price при пустом списке продуктов"""
+
+    category_empty = Category("Пустая категория", "Категория без продуктов", [])
+    assert category_empty.middle_price() == 0
