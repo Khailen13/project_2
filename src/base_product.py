@@ -20,13 +20,3 @@ class BaseProduct(ABC):
     @abstractmethod
     def new_product(cls, params: dict):
         pass
-
-    @property
-    @abstractmethod
-    def price(self):
-        pass
-
-    @price.setter
-    @abstractmethod
-    def price(self, new_price):
-        pass

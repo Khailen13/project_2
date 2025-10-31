@@ -12,19 +12,22 @@ class Product(BaseProduct, MixinInfo):
     general_product_list: list = []
 
     def __init__(self, name, description, price, quantity) -> None:
-        self.name = name
-        self.description = description
-        self.__price = price
-        self.quantity = quantity
-        Product.general_product_list.append(
-            {
-                "name": name,
-                "description": description,
-                "price": price,
-                "quantity": quantity,
-            }
-        )
-        super().__init__()
+        if quantity != 0:
+            self.name = name
+            self.description = description
+            self.__price = price
+            self.quantity = quantity
+            Product.general_product_list.append(
+                {
+                    "name": name,
+                    "description": description,
+                    "price": price,
+                    "quantity": quantity,
+                }
+            )
+            super().__init__()
+        else:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен")
 
     def __str__(self):
         return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт.\n"

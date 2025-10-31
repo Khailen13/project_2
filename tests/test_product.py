@@ -128,3 +128,10 @@ def test_product_subclass():
     """Проверка условия, что Product является подклассом классов BaseProduct и MixinInfo"""
 
     assert issubclass(Product, (BaseProduct, MixinInfo))
+
+
+def tests_product_init_with_zero_quantity():
+    """Проверка инициализации при quantity = 0"""
+
+    with pytest.raises(ValueError):
+        Product("Бракованный товар", "Неверное количество", 1000.0, 0)
